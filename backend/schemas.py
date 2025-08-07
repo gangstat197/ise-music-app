@@ -16,6 +16,7 @@ class SongCreate(SongBase):
     file_size: Optional[int] = None
     duration: Optional[float] = None
     image_path: Optional[str] = None
+    user_id: Optional[int] = None
 
 class SongUpdate(BaseModel):
     title: Optional[str] = None
@@ -32,6 +33,7 @@ class SongResponse(SongBase):
     file_size: Optional[int] = None
     image_path: Optional[str] = None
     upload_date: datetime
+    user_id: Optional[int] = None
     
     class Config:
         orm_mode = True
@@ -55,6 +57,17 @@ class UserResponse(UserBase):
     class Config:
         orm_mode = True
 
+# Login Schemas
+class UserLogin(BaseModel):
+    email: str
+    password: str  # For demo purposes, not validated
+
+class UserLoginResponse(BaseModel):
+    user_id: int
+    username: str
+    email: str
+    message: str
+
 # Favorite Schemas
 class FavoriteBase(BaseModel):
     user_id: int
@@ -70,52 +83,7 @@ class FavoriteResponse(FavoriteBase):
     class Config:
         orm_mode = True
 
-# Playlist Schemas
-class PlaylistBase(BaseModel):
-    name: str
 
-class PlaylistCreate(PlaylistBase):
-    pass
-
-class PlaylistUpdate(BaseModel):
-    name: Optional[str] = None
-
-class PlaylistResponse(PlaylistBase):
-    id: int
-    user_id: int
-    created_at: datetime
-    
-    class Config:
-        orm_mode = True
-
-class PlaylistDetailResponse(PlaylistBase):
-    id: int
-    user_id: int
-    created_at: datetime
-    songs: List['SongResponse'] = []
-    
-    class Config:
-        orm_mode = True
-
-# PlaylistSong Schemas
-class PlaylistSongBase(BaseModel):
-    playlist_id: int
-    song_id: int
-    position: Optional[int] = 0
-
-class PlaylistSongCreate(PlaylistSongBase):
-    pass
-
-class PlaylistSongResponse(PlaylistSongBase):
-    id: int
-    added_at: datetime
-    
-    class Config:
-        orm_mode = True
-
-# Playlist Reorder Schema
-class PlaylistReorder(BaseModel):
-    song_ids: List[int]
 
 # File Upload Schema
 class FileUploadResponse(BaseModel):

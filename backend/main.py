@@ -1,10 +1,19 @@
 from fastapi import FastAPI, Depends, status, Response, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
-from .database import engine, SessionLocal, get_db
-from . import models, schemas
-from .routers import song_router, user_router, favorites_router, playlists_router
+import os
+try:
+    # Try relative imports first (for module execution)
+    from .database import engine, SessionLocal, get_db
+    from . import models, schemas
+    from .routers import song_router, user_router, favorites_router
+except ImportError:
+    # Fall back to absolute imports (for direct execution)
+    from database import engine, SessionLocal, get_db
+    import models, schemas
+    from routers import song_router, user_router, favorites_router
 
 app = FastAPI(
     title="Rock 'em All",
@@ -28,7 +37,11 @@ models.Base.metadata.create_all(bind=engine)
 app.include_router(song_router, prefix="/api/v1")
 app.include_router(user_router, prefix="/api/v1")
 app.include_router(favorites_router, prefix="/api/v1")
-app.include_router(playlists_router, prefix="/api/v1")
+
+# Serve uploaded files
+uploads_dir = "uploads"
+if os.path.exists(uploads_dir):
+    app.mount("/uploads", StaticFiles(directory=uploads_dir), name="uploads")
 
 # Root endpoint
 @app.get("/")

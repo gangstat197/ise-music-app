@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  # Backend FastAPI service
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: music-app-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/uploads:/app/uploads
+      - ./backend/songs.db:/app/songs.db
+    environment:
+      - PYTHONPATH=/app
+    restart: unless-stopped
+    networks:
+      - music-app-network
+
+  # Frontend Nginx service  
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: music-app-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - music-app-network
+
+# Networks
+networks:
+  music-app-network:
+    driver: bridge
+
+# Volumes for persistent data
+volumes:
+  uploads:
+  database:

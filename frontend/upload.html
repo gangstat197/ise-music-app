@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Song - Rock 'em All</title>
+    <link rel="stylesheet" href="style/style.css">
+    <link rel="stylesheet" href="style/upload.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Navbar will be inserted here by navbar.js -->
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="upload-wrapper">
+                <div class="upload-box">
+                    <div class="logo">
+                        <img src="assets/icons/business.png" alt="Logo">
+                        <h1>Upload New Song</h1>
+                    </div>
+                    
+                    <form class="upload-form" id="uploadForm" enctype="multipart/form-data">
+                        <!-- Required Fields -->
+                        <div class="form-section">
+                            <h3>Required Information</h3>
+                            
+                            <div class="input-group">
+                                <label for="title">Song Title *</label>
+                                <input type="text" id="title" name="title" placeholder="Enter song title" required>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="artist">Artist *</label>
+                                <input type="text" id="artist" name="artist" placeholder="Enter artist name" required>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="file">Audio File *</label>
+                                <input type="file" id="file" name="file" accept=".mp3,.ogg,.wav" required>
+                                <div class="file-info">Supported formats: MP3, OGG, WAV</div>
+                            </div>
+                        </div>
+
+                        <!-- Optional Fields -->
+                        <div class="form-section">
+                            <h3>Optional Information</h3>
+                            
+                            <div class="input-group">
+                                <label for="album">Album</label>
+                                <input type="text" id="album" name="album" placeholder="Enter album name">
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="genre">Genre</label>
+                                <input type="text" id="genre" name="genre" placeholder="Enter genre">
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="year">Year</label>
+                                <input type="number" id="year" name="year" placeholder="Enter year" min="1900" max="2099">
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="image">Cover Image</label>
+                                <input type="file" id="image" name="image" accept=".jpg,.jpeg,.png,.gif,.webp">
+                                <div class="file-info">Supported formats: JPG, PNG, GIF, WEBP</div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="upload-btn">Upload Song</button>
+                            <button type="reset" class="reset-btn">Clear Form</button>
+                        </div>
+                    </form>
+
+                    <!-- Upload Progress -->
+                    <div class="upload-progress" id="uploadProgress" style="display: none;">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <div class="progress-text" id="progressText">Uploading...</div>
+                    </div>
+
+                    <!-- Upload Result -->
+                    <div class="upload-result" id="uploadResult" style="display: none;">
+                        <div class="result-message" id="resultMessage"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/user-service.js"></script>
+    <script src="js/navbar.js"></script>
+    <script src="js/upload.js?v=2"></script>
+</body>
+</html>

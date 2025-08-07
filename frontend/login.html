@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Rock 'em All</title>
+    <link rel="stylesheet" href="style/style.css">
+    <link rel="stylesheet" href="style/login.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Navbar will be inserted here by navbar.js -->
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="login-wrapper">
+                <div class="login-box">
+                    <div class="logo">
+                        <img src="assets/icons/business.png" alt="Logo">
+                        <h1>Rock 'em All</h1>
+                    </div>
+                    
+                    <form class="login-form">
+                        <div class="input-group">
+                            <input type="email" placeholder="Email" required>
+                        </div>
+                        
+                        <div class="input-group">
+                            <input type="password" placeholder="Password" required>
+                        </div>
+                        
+                        <button type="submit" class="login-btn">Login</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Load Scripts -->
+    <script src="js/user-service.js"></script>
+    <script src="js/navbar.js"></script>
+    <script src="js/login.js"></script>
+</body>
+</html>
