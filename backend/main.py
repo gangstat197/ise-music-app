@@ -5,12 +5,10 @@ from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 import os
 try:
-    # Try relative imports first (for module execution)
     from .database import engine, SessionLocal, get_db
     from . import models, schemas
     from .routers import song_router, user_router, favorites_router
 except ImportError:
-    # Fall back to absolute imports (for direct execution)
     from database import engine, SessionLocal, get_db
     import models, schemas
     from routers import song_router, user_router, favorites_router
@@ -21,29 +19,24 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, specify your frontend URL
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Create tables
 models.Base.metadata.create_all(bind=engine)
 
-# Include routers
 app.include_router(song_router, prefix="/api/v1")
 app.include_router(user_router, prefix="/api/v1")
 app.include_router(favorites_router, prefix="/api/v1")
 
-# Serve uploaded files
 uploads_dir = "uploads"
 if os.path.exists(uploads_dir):
     app.mount("/uploads", StaticFiles(directory=uploads_dir), name="uploads")
 
-# Root endpoint
 @app.get("/")
 def read_root():
     return {
@@ -53,12 +46,10 @@ def read_root():
         "redoc": "/redoc"
     }
 
-# Health check endpoint
 @app.get("/health")
 def health_check():
     return {"status": "healthy", "message": "Music Player API is running"}
 
-# Error handlers
 @app.exception_handler(404)
 async def not_found_handler(request, exc):
     return JSONResponse(
