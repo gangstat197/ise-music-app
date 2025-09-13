@@ -1,6 +1,8 @@
 // Audio player state
 let currentSongId = null;
 let isPlaying = false;
+let isMuted = false;
+let previousVolume = 70;
 
 // DOM elements
 let audioPlayer = null;
@@ -9,7 +11,15 @@ let progressBar = null;
 let currentTimeSpan = null;
 let durationSpan = null;
 let volumeBar = null;
+let volumeBtn = null;
+let volumeLevel = null;
 let playerSongInfo = null;
+let playerSongTitle = null;
+let playerSongArtist = null;
+let playerAlbumArt = null;
+let playerFavoriteBtn = null;
+let searchInput = null;
+let searchClear = null;
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
@@ -61,15 +71,24 @@ function initializePlayer() {
     if (!audioPlayer) {
         audioPlayer = new Audio();
         audioPlayer.preload = 'metadata';
+        audioPlayer.crossOrigin = 'anonymous'; // For CORS
     }
     
     // Get player elements
     playButton = document.querySelector('.player-controls .play-btn');
-    progressBar = document.querySelector('.progress-bar');
-    currentTimeSpan = document.querySelector('.current-time');
-    durationSpan = document.querySelector('.duration');
-    volumeBar = document.querySelector('.volume-bar');
+    progressBar = document.getElementById('progress-bar');
+    currentTimeSpan = document.getElementById('current-time');
+    durationSpan = document.getElementById('duration');
+    volumeBar = document.getElementById('volume-bar');
+    volumeBtn = document.querySelector('.volume-btn');
+    volumeLevel = document.getElementById('volume-level');
     playerSongInfo = document.querySelector('.player-song-info');
+    playerSongTitle = document.getElementById('player-song-title');
+    playerSongArtist = document.getElementById('player-song-artist');
+    playerAlbumArt = document.querySelector('.player-album-art');
+    playerFavoriteBtn = document.querySelector('.player-favorite-btn');
+    searchInput = document.getElementById('search-input');
+    searchClear = document.querySelector('.search-clear');
     
     console.log('Player elements found:');
     console.log('- Play button:', !!playButton);
@@ -77,12 +96,16 @@ function initializePlayer() {
     console.log('- Current time span:', !!currentTimeSpan);
     console.log('- Duration span:', !!durationSpan);
     console.log('- Volume bar:', !!volumeBar);
+    console.log('- Volume button:', !!volumeBtn);
     console.log('- Player song info:', !!playerSongInfo);
     
     // Set initial volume
     audioPlayer.volume = 0.7;
     if (volumeBar) {
         volumeBar.value = 70;
+    }
+    if (volumeLevel) {
+        volumeLevel.textContent = '70%';
     }
     
     // Setup audio event listeners here (after audioPlayer is created)
@@ -91,6 +114,9 @@ function initializePlayer() {
         audioPlayer.addEventListener('loadedmetadata', updateDuration);
         audioPlayer.addEventListener('ended', onSongEnd);
         audioPlayer.addEventListener('error', onAudioError);
+        audioPlayer.addEventListener('loadstart', onLoadStart);
+        audioPlayer.addEventListener('canplay', onCanPlay);
+        audioPlayer.addEventListener('waiting', onWaiting);
         console.log('Audio event listeners set up');
     }
 }
@@ -101,17 +127,55 @@ function setupEventListeners() {
         playButton.addEventListener('click', togglePlay);
     }
     
+    // Previous/Next buttons
+    const prevBtn = document.querySelector('.prev-btn');
+    const nextBtn = document.querySelector('.next-btn');
+    if (prevBtn) {
+        prevBtn.addEventListener('click', playPrevious);
+    }
+    if (nextBtn) {
+        nextBtn.addEventListener('click', playNext);
+    }
+    
     // Progress bar
     if (progressBar) {
         console.log('Setting up progress bar event listener');
         progressBar.addEventListener('input', seekTo);
-        progressBar.addEventListener('change', seekTo); // Also listen for change event
+        progressBar.addEventListener('change', seekTo);
+        progressBar.addEventListener('mousedown', () => {
+            audioPlayer.pause();
+        });
+        progressBar.addEventListener('mouseup', () => {
+            if (isPlaying) {
+                audioPlayer.play();
+            }
+        });
     }
     
-    // Volume bar
+    // Volume controls
     if (volumeBar) {
         volumeBar.addEventListener('input', changeVolume);
     }
+    if (volumeBtn) {
+        volumeBtn.addEventListener('click', toggleMute);
+    }
+    
+    // Player favorite button
+    if (playerFavoriteBtn) {
+        playerFavoriteBtn.addEventListener('click', toggleCurrentSongFavorite);
+    }
+    
+    // Search functionality
+    if (searchInput) {
+        searchInput.addEventListener('input', handleSearchInput);
+        searchInput.addEventListener('keydown', handleSearchKeydown);
+    }
+    if (searchClear) {
+        searchClear.addEventListener('click', clearSearch);
+    }
+    
+    // Keyboard shortcuts
+    document.addEventListener('keydown', handleKeyboardShortcuts);
     
     // Audio events are now set up in initializePlayer() after audioPlayer is created
 }
@@ -482,6 +546,11 @@ function createTrendingSongItem(song) {
 // Audio Player Functions
 async function playSong(song) {
     try {
+        // Show loading state
+        if (window.showNotification) {
+            window.showNotification('Loading song...', 'info', 1000);
+        }
+        
         // Stop current audio if playing
         if (audioPlayer && isPlaying) {
             audioPlayer.pause();
@@ -494,6 +563,11 @@ async function playSong(song) {
         // Update player info
         updatePlayerInfo(song);
         
+        // Add to queue if not already there
+        if (window.queueManager) {
+            window.queueManager.addToQueue(song);
+        }
+        
         // Play the song
         await audioPlayer.play();
         
@@ -504,9 +578,21 @@ async function playSong(song) {
         // Add visual feedback to the clicked card
         highlightPlayingCard(song.id);
         
+        // Update favorite button state
+        updatePlayerFavoriteButton();
+        
+        // Show success notification
+        if (window.showNotification) {
+            window.showNotification(`Now playing: ${song.title}`, 'success', 2000);
+        }
+        
     } catch (error) {
         console.error('Error playing song:', error);
-        displayError('Failed to play song. Please try again.');
+        if (window.showNotification) {
+            window.showNotification('Failed to play song. Please try again.', 'error', 3000);
+        } else {
+            displayError('Failed to play song. Please try again.');
+        }
     }
 }
 
@@ -531,16 +617,29 @@ function updatePlayButton() {
 }
 
 function updatePlayerInfo(song) {
-    if (playerSongInfo) {
-        const imageSrc = song.image_path ? `${window.API_BASE_URL}/songs/${song.id}/image` : 'assets/songs/ontheway.png';
-        playerSongInfo.innerHTML = `
-            <img src="${imageSrc}" alt="${song.title}" onerror="this.src='assets/songs/ontheway.png'">
-            <div>
-                <span class="song-title">${song.title}</span>
-                <span class="song-artist">${song.artist}</span>
-            </div>
-        `;
+    const imageSrc = song.image_path ? `${window.API_BASE_URL}/songs/${song.id}/image` : 'assets/songs/ontheway.png';
+    
+    // Update album art
+    if (playerAlbumArt) {
+        playerAlbumArt.src = imageSrc;
+        playerAlbumArt.alt = `${song.title} album cover`;
+        playerAlbumArt.onerror = function() {
+            this.src = 'assets/songs/ontheway.png';
+        };
     }
+    
+    // Update song title
+    if (playerSongTitle) {
+        playerSongTitle.textContent = song.title;
+    }
+    
+    // Update song artist
+    if (playerSongArtist) {
+        playerSongArtist.textContent = song.artist;
+    }
+    
+    // Update page title
+    document.title = `${song.title} - ${song.artist} | Rock 'em All`;
 }
 
 function updateProgress() {
@@ -588,7 +687,214 @@ function seekTo(event) {
 
 function changeVolume() {
     if (volumeBar) {
-        audioPlayer.volume = volumeBar.value / 100;
+        const volume = volumeBar.value / 100;
+        audioPlayer.volume = volume;
+        previousVolume = volumeBar.value;
+        
+        if (volumeLevel) {
+            volumeLevel.textContent = Math.round(volume * 100) + '%';
+        }
+        
+        // Update volume button icon
+        if (volumeBtn) {
+            if (volume === 0) {
+                volumeBtn.textContent = '🔇';
+            } else if (volume < 0.5) {
+                volumeBtn.textContent = '🔉';
+            } else {
+                volumeBtn.textContent = '🔊';
+            }
+        }
+    }
+}
+
+function toggleMute() {
+    if (!volumeBar) return;
+    
+    isMuted = !isMuted;
+    
+    if (isMuted) {
+        previousVolume = volumeBar.value;
+        volumeBar.value = 0;
+        audioPlayer.volume = 0;
+        if (volumeLevel) volumeLevel.textContent = '0%';
+        if (volumeBtn) volumeBtn.textContent = '🔇';
+    } else {
+        volumeBar.value = previousVolume;
+        audioPlayer.volume = previousVolume / 100;
+        if (volumeLevel) volumeLevel.textContent = previousVolume + '%';
+        if (volumeBtn) {
+            if (previousVolume < 50) {
+                volumeBtn.textContent = '🔉';
+            } else {
+                volumeBtn.textContent = '🔊';
+            }
+        }
+    }
+    
+    if (window.showNotification) {
+        window.showNotification(
+            `Volume ${isMuted ? 'muted' : 'unmuted'}`,
+            'info',
+            1500
+        );
+    }
+}
+
+function playPrevious() {
+    if (window.queueManager) {
+        const previousSong = window.queueManager.previous();
+        if (previousSong) {
+            playSong(previousSong);
+        }
+    }
+}
+
+function playNext() {
+    if (window.queueManager) {
+        const nextSong = window.queueManager.next();
+        if (nextSong) {
+            playSong(nextSong);
+        }
+    }
+}
+
+function toggleCurrentSongFavorite() {
+    if (currentSongId && window.toggleFavorite) {
+        window.toggleFavorite(currentSongId);
+        updatePlayerFavoriteButton();
+    }
+}
+
+function updatePlayerFavoriteButton() {
+    if (!playerFavoriteBtn || !currentSongId) return;
+    
+    // This would need to check if the current song is favorited
+    // For now, we'll just toggle the visual state
+    const isFavorited = playerFavoriteBtn.textContent === '❤️';
+    playerFavoriteBtn.textContent = isFavorited ? '🤍' : '❤️';
+    playerFavoriteBtn.title = isFavorited ? 'Add to favorites' : 'Remove from favorites';
+}
+
+function handleSearchInput(e) {
+    const query = e.target.value.trim();
+    
+    if (searchClear) {
+        searchClear.style.display = query.length > 0 ? 'block' : 'none';
+    }
+    
+    if (query.length > 0) {
+        debounceSearch(query);
+    } else {
+        loadSongs();
+    }
+}
+
+function handleSearchKeydown(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        const query = e.target.value.trim();
+        if (query.length > 0) {
+            searchSongs(query);
+        }
+    } else if (e.key === 'Escape') {
+        clearSearch();
+    }
+}
+
+function clearSearch() {
+    if (searchInput) {
+        searchInput.value = '';
+        searchInput.focus();
+    }
+    if (searchClear) {
+        searchClear.style.display = 'none';
+    }
+    loadSongs();
+}
+
+function debounceSearch(query) {
+    clearTimeout(debounceSearch.timeout);
+    debounceSearch.timeout = setTimeout(() => {
+        searchSongs(query);
+    }, 300);
+}
+
+function handleKeyboardShortcuts(e) {
+    // Don't trigger shortcuts when typing in inputs
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+        return;
+    }
+    
+    switch (e.key) {
+        case ' ':
+            e.preventDefault();
+            togglePlay();
+            break;
+        case 'ArrowLeft':
+            e.preventDefault();
+            seekBackward();
+            break;
+        case 'ArrowRight':
+            e.preventDefault();
+            seekForward();
+            break;
+        case 'ArrowUp':
+            e.preventDefault();
+            increaseVolume();
+            break;
+        case 'ArrowDown':
+            e.preventDefault();
+            decreaseVolume();
+            break;
+        case 'm':
+        case 'M':
+            e.preventDefault();
+            toggleMute();
+            break;
+        case 'f':
+        case 'F':
+            e.preventDefault();
+            toggleCurrentSongFavorite();
+            break;
+        case 'n':
+        case 'N':
+            e.preventDefault();
+            playNext();
+            break;
+        case 'p':
+        case 'P':
+            e.preventDefault();
+            playPrevious();
+            break;
+    }
+}
+
+function seekBackward() {
+    if (audioPlayer) {
+        audioPlayer.currentTime = Math.max(0, audioPlayer.currentTime - 10);
+    }
+}
+
+function seekForward() {
+    if (audioPlayer) {
+        audioPlayer.currentTime = Math.min(audioPlayer.duration, audioPlayer.currentTime + 10);
+    }
+}
+
+function increaseVolume() {
+    if (volumeBar) {
+        const newVolume = Math.min(100, parseInt(volumeBar.value) + 10);
+        volumeBar.value = newVolume;
+        changeVolume();
+    }
+}
+
+function decreaseVolume() {
+    if (volumeBar) {
+        const newVolume = Math.max(0, parseInt(volumeBar.value) - 10);
+        volumeBar.value = newVolume;
+        changeVolume();
     }
 }
 
@@ -600,9 +906,32 @@ function onSongEnd() {
 
 function onAudioError() {
     console.error('Audio playback error');
-    displayError('Error playing audio. Please try again.');
+    if (window.showNotification) {
+        window.showNotification('Error playing audio. Please try again.', 'error', 3000);
+    } else {
+        displayError('Error playing audio. Please try again.');
+    }
     isPlaying = false;
     updatePlayButton();
+}
+
+function onLoadStart() {
+    console.log('Audio loading started');
+    if (window.showNotification) {
+        window.showNotification('Loading audio...', 'info', 1000);
+    }
+}
+
+function onCanPlay() {
+    console.log('Audio can start playing');
+    // Remove any loading notifications
+}
+
+function onWaiting() {
+    console.log('Audio is waiting for more data');
+    if (window.showNotification) {
+        window.showNotification('Buffering...', 'info', 1000);
+    }
 }
 
 // Utility Functions
@@ -664,30 +993,40 @@ function displayError(message) {
 
 // Search functionality
 function setupSearch() {
-    const searchInput = document.querySelector('.search-bar input');
-    if (searchInput) {
-        searchInput.addEventListener('input', debounce(async (e) => {
-            const query = e.target.value.trim();
-            if (query.length > 0) {
-                await searchSongs(query);
-            } else {
-                await loadSongs();
-            }
-        }, 300));
-    }
+    // Search is now handled in setupEventListeners
+    console.log('Search functionality initialized');
 }
 
 async function searchSongs(query) {
     try {
+        if (window.showNotification) {
+            window.showNotification(`Searching for "${query}"...`, 'info', 1000);
+        }
+        
         const response = await fetch(`${window.API_BASE_URL}/songs/?search=${encodeURIComponent(query)}`);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const songs = await response.json();
+        
+        if (songs.length === 0) {
+            if (window.showNotification) {
+                window.showNotification(`No songs found for "${query}"`, 'warning', 2000);
+            }
+        } else {
+            if (window.showNotification) {
+                window.showNotification(`Found ${songs.length} song(s)`, 'success', 1500);
+            }
+        }
+        
         displaySongs(songs);
     } catch (error) {
         console.error('Error searching songs:', error);
-        displayError('Failed to search songs.');
+        if (window.showNotification) {
+            window.showNotification('Failed to search songs', 'error', 3000);
+        } else {
+            displayError('Failed to search songs.');
+        }
     }
 }
 

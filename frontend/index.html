@@ -2,66 +2,114 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>iSE Final Test</title>
-  <link rel="stylesheet" href="style/style.css?v=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Rock 'em All - A modern web-based music player with upload, favorites, and streaming capabilities">
+  <meta name="keywords" content="music, player, streaming, upload, favorites, rock, songs">
+  <meta name="author" content="iSE Music App">
+  <title>Rock 'em All - Music Player</title>
+  <link rel="stylesheet" href="style/style.css?v=2">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/x-icon" href="assets/icons/favicon.ico">
 </head>
 <body>
-  <div class="app-container">
+  <div class="app-container" role="application" aria-label="Music Player Application">
+    <!-- Skip to main content for accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
 
     <!-- Main Content -->
-    <main class="main-content">
+    <main id="main-content" class="main-content" role="main">
       <!-- Search Bar -->
-      <div class="search-bar">
-        <div style="position: relative; display: flex; align-items: center;">
-          <img src="assets/icons/magnifying-glass.png" alt="Search Icon" style="position: absolute; left: 14px; width: 20px; height: 20px; pointer-events: none;">
-          <input type="text" placeholder="Search for songs, artists, albums..." style="padding-left: 42px;">
+      <section class="search-section" aria-label="Search songs">
+        <div class="search-bar">
+          <div class="search-input-container">
+            <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.35-4.35"></path>
+            </svg>
+            <input 
+              type="search" 
+              id="search-input"
+              placeholder="Search for songs, artists, albums..." 
+              aria-label="Search songs"
+              autocomplete="off"
+              spellcheck="false">
+            <button class="search-clear" type="button" aria-label="Clear search" style="display: none;">×</button>
+          </div>
         </div>
-      </div>
+      </section>
 
       <!-- Recently Listened -->
-      <section class="recently-listened">
-        <h2>Recently Listened</h2>
-        <div class="song-cards">
+      <section class="recently-listened" aria-label="Recently played songs">
+        <header class="section-header">
+          <h2>Recently Listened</h2>
+          <button class="view-all-btn" aria-label="View all recently played songs">View All</button>
+        </header>
+        <div class="song-cards" role="list" aria-label="Recently played songs list">
           <!-- Song cards will be loaded dynamically -->
-          <div class="loading">Loading songs...</div>
+          <div class="loading" role="status" aria-live="polite">Loading songs...</div>
         </div>
       </section>
 
       <!-- Browse Songs -->
-      <section class="browse-songs">
-        <h2>Browse Songs</h2>
-        <div class="song-cards">
+      <section class="browse-songs" aria-label="Browse all songs">
+        <header class="section-header">
+          <h2>Browse Songs</h2>
+          <div class="filter-controls">
+            <select id="genre-filter" aria-label="Filter by genre">
+              <option value="">All Genres</option>
+              <option value="rock">Rock</option>
+              <option value="pop">Pop</option>
+              <option value="jazz">Jazz</option>
+              <option value="classical">Classical</option>
+            </select>
+            <select id="sort-filter" aria-label="Sort songs">
+              <option value="newest">Newest First</option>
+              <option value="oldest">Oldest First</option>
+              <option value="title">Title A-Z</option>
+              <option value="artist">Artist A-Z</option>
+            </select>
+          </div>
+        </header>
+        <div class="song-cards" role="list" aria-label="All songs list">
           <!-- Song cards will be loaded dynamically -->
-          <div class="loading">Loading songs...</div>
+          <div class="loading" role="status" aria-live="polite">Loading songs...</div>
         </div>
       </section>
 
       <!-- Trending Songs & Popular Artists (side by side) -->
       <div class="trending-popular">
-        <section class="trending-songs">
+        <section class="trending-songs" aria-label="Trending songs">
           <h2>Trending Songs</h2>
-          <ul>
+          <ul role="list" aria-label="Trending songs list">
             <!-- Trending songs will be loaded dynamically -->
-            <li class="loading">Loading trending songs...</li>
+            <li class="loading" role="status" aria-live="polite">Loading trending songs...</li>
           </ul>
         </section>
-        <section class="popular-artists">
+        <section class="popular-artists" aria-label="Popular artists">
           <h2>Popular Artists</h2>
-          <ul>
-            <li>
-              <img src="assets/artists/leminh.png" alt="Le Hoang Minh">
-              <span>Le Hoang Minh</span>
-              <span class="followers">2.3M Followers</span>
+          <ul role="list" aria-label="Popular artists list">
+            <li role="listitem">
+              <img src="assets/artists/leminh.png" alt="Le Hoang Minh" loading="lazy">
+              <div class="artist-info">
+                <span class="artist-name">Le Hoang Minh</span>
+                <span class="followers">2.3M Followers</span>
+              </div>
             </li>
-            <li>
-              <img src="assets/artists/sam_smith.png" alt="Sam Smith">
-              <span>Sam Smith</span>
-              <span class="followers">1.9M Followers</span>
+            <li role="listitem">
+              <img src="assets/artists/sam_smith.png" alt="Sam Smith" loading="lazy">
+              <div class="artist-info">
+                <span class="artist-name">Sam Smith</span>
+                <span class="followers">1.9M Followers</span>
+              </div>
             </li>
-            <li>
-              <img src="assets/artists/drake.png" alt="Drake">
-              <span>Drake</span>
-              <span class="followers">1.5M Followers</span>
+            <li role="listitem">
+              <img src="assets/artists/drake.png" alt="Drake" loading="lazy">
+              <div class="artist-info">
+                <span class="artist-name">Drake</span>
+                <span class="followers">1.5M Followers</span>
+              </div>
             </li>
           </ul>
         </section>
@@ -69,36 +117,102 @@
     </main>
 
     <!-- Bottom Music Player -->
-    <footer class="music-player">
+    <footer class="music-player" role="region" aria-label="Music player controls">
       <div class="player-song-info">
-        <img src="assets/songs/ontheway.png" alt="Current Song">
-        <div>
-          <span class="song-title">No song selected</span>
-          <span class="song-artist">Click a song to play</span>
+        <img src="assets/songs/ontheway.png" alt="Current song album cover" class="player-album-art">
+        <div class="player-song-details">
+          <span class="song-title" id="player-song-title">No song selected</span>
+          <span class="song-artist" id="player-song-artist">Click a song to play</span>
         </div>
+        <button class="player-favorite-btn" aria-label="Add to favorites" title="Add to favorites">🤍</button>
       </div>
+      
       <div class="player-controls">
-        <button class="prev-btn">⏮</button>
-        <button class="play-btn">▶</button>
-        <button class="next-btn">⏭</button>
+        <button class="prev-btn" aria-label="Previous song" title="Previous song">⏮</button>
+        <button class="play-btn" aria-label="Play or pause song" title="Play/Pause">▶</button>
+        <button class="next-btn" aria-label="Next song" title="Next song">⏭</button>
+        <button class="shuffle-btn" aria-label="Toggle shuffle" title="Shuffle">🔀</button>
+        <button class="repeat-btn" aria-label="Toggle repeat" title="Repeat">🔁</button>
       </div>
+      
       <div class="player-progress">
-        <span class="current-time">0:00</span>
-        <input type="range" min="0" max="100" value="0" class="progress-bar">
-        <span class="duration">0:00</span>
+        <span class="current-time" id="current-time" aria-label="Current time">0:00</span>
+        <div class="progress-container">
+          <input 
+            type="range" 
+            min="0" 
+            max="100" 
+            value="0" 
+            class="progress-bar" 
+            id="progress-bar"
+            aria-label="Song progress"
+            title="Seek through song">
+          <div class="progress-buffer" id="progress-buffer"></div>
+        </div>
+        <span class="duration" id="duration" aria-label="Song duration">0:00</span>
       </div>
+      
       <div class="player-volume">
-        <span>🔊</span>
-        <input type="range" min="0" max="100" value="70" class="volume-bar">
+        <button class="volume-btn" aria-label="Mute or unmute" title="Mute/Unmute">🔊</button>
+        <input 
+          type="range" 
+          min="0" 
+          max="100" 
+          value="70" 
+          class="volume-bar" 
+          id="volume-bar"
+          aria-label="Volume control"
+          title="Adjust volume">
+        <span class="volume-level" id="volume-level">70%</span>
+      </div>
+      
+      <div class="player-options">
+        <button class="queue-btn" aria-label="Show queue" title="Show queue">📋</button>
+        <button class="fullscreen-btn" aria-label="Toggle fullscreen" title="Fullscreen">⛶</button>
       </div>
     </footer>
   </div>
 
+  <!-- Notification Container -->
+  <div id="notification-container" class="notification-container" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- Modal for Queue -->
+  <div id="queue-modal" class="modal" role="dialog" aria-labelledby="queue-modal-title" aria-hidden="true">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="queue-modal-title">Play Queue</h2>
+        <button class="modal-close" aria-label="Close queue modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="queue-list" class="queue-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div id="loading-overlay" class="loading-overlay" aria-hidden="true">
+    <div class="loading-spinner">
+      <div class="spinner"></div>
+      <p>Loading...</p>
+    </div>
+  </div>
+
+  <!-- Dark Mode Toggle (will be added to navbar) -->
+  <button id="dark-mode-toggle" class="dark-mode-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+    <span class="sun-icon">☀️</span>
+    <span class="moon-icon">🌙</span>
+  </button>
+
   <!-- Load Scripts -->
+  <script src="js/performance.js"></script>
+  <script src="js/loading-manager.js"></script>
   <script src="js/user-service.js"></script>
   <script src="js/navbar.js"></script>
-  <script src="js/download.js?v=1"></script>
+  <script src="js/download.js?v=2"></script>
   <script src="js/favorites.js"></script>
-  <script src="js/player.js?v=1"></script>
+  <script src="js/player.js?v=2"></script>
+  <script src="js/notifications.js"></script>
+  <script src="js/dark-mode.js"></script>
+  <script src="js/queue-manager.js"></script>
 </body>
 </html>

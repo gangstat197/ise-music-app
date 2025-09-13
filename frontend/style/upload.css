@@ -1,227 +1,322 @@
-/* Upload specific styles - only for upload page */
+/* Upload Page Specific Styles */
 .upload-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    min-height: 100%;
-    padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+  padding: var(--spacing-xl);
 }
 
 .upload-box {
-    background: white;
-    border-radius: 12px;
-    padding: 40px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    width: 100%;
-    max-width: 600px;
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-2xl);
+  box-shadow: var(--shadow-xl);
+  width: 100%;
+  max-width: 600px;
+  border: 1px solid var(--border-light);
+  position: relative;
+  overflow: hidden;
 }
 
-.logo {
-    text-align: center;
-    margin-bottom: 30px;
+.upload-box::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
 }
 
-.logo img {
-    width: 50px;
-    height: 50px;
-    margin-bottom: 10px;
+.upload-box .logo {
+  text-align: center;
+  margin-bottom: var(--spacing-2xl);
+  justify-content: center;
 }
 
-.logo h1 {
-    font-size: 1.8rem;
-    color: #333;
-    font-weight: 600;
+.upload-box .logo img {
+  width: 60px;
+  height: 60px;
+  margin-right: var(--spacing-md);
+}
+
+.upload-box .logo h1 {
+  font-size: var(--font-size-3xl);
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
 }
 
 .upload-form {
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
 }
 
 .form-section {
-    border: 1px solid #e1e5e9;
-    border-radius: 8px;
-    padding: 20px;
-    background: #f8f9fa;
+  background: var(--bg-secondary);
+  padding: var(--spacing-xl);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-light);
 }
 
 .form-section h3 {
-    margin: 0 0 15px 0;
-    color: #333;
-    font-size: 1.1rem;
-    font-weight: 600;
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-lg);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 2px solid var(--primary-color);
+  display: inline-block;
 }
 
 .input-group {
-    margin-bottom: 15px;
-}
-
-.input-group:last-child {
-    margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
 }
 
 .input-group label {
-    display: block;
-    margin-bottom: 5px;
-    color: #555;
-    font-weight: 500;
-    font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.input-group input {
-    width: 100%;
-    padding: 12px;
-    border: 2px solid #e1e5e9;
-    border-radius: 6px;
-    font-size: 1rem;
-    outline: none;
-    transition: border-color 0.3s ease;
-    box-sizing: border-box;
+.input-group input,
+.input-group select {
+  padding: var(--spacing-lg);
+  border: 2px solid var(--border-light);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  transition: all var(--transition-fast);
+  outline: none;
+  width: 100%;
 }
 
-.input-group input:focus {
-    border-color: #667eea;
+.input-group input:focus,
+.input-group select:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  transform: translateY(-1px);
 }
 
-.input-group input[type="file"] {
-    padding: 8px;
-    background: white;
+.input-group input::placeholder {
+  color: var(--text-muted);
 }
 
 .file-info {
-    font-size: 0.8rem;
-    color: #666;
-    margin-top: 5px;
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  margin-top: var(--spacing-xs);
+  font-style: italic;
 }
 
 .form-actions {
-    display: flex;
-    gap: 15px;
-    margin-top: 10px;
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: center;
+  margin-top: var(--spacing-xl);
+}
+
+.upload-btn,
+.reset-btn {
+  padding: var(--spacing-lg) var(--spacing-2xl);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: none;
+  min-width: 150px;
+  position: relative;
+  overflow: hidden;
 }
 
 .upload-btn {
-    background: #667eea;
-    color: white;
-    border: none;
-    padding: 15px 25px;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.3s ease;
-    flex: 1;
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+  color: var(--text-inverse);
+}
+
+.upload-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left var(--transition-normal);
+}
+
+.upload-btn:hover::before {
+  left: 100%;
 }
 
 .upload-btn:hover {
-    background: #5a6fd8;
-}
-
-.upload-btn:disabled {
-    background: #ccc;
-    cursor: not-allowed;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
 }
 
 .reset-btn {
-    background: #6c757d;
-    color: white;
-    border: none;
-    padding: 15px 25px;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.3s ease;
-    flex: 0 0 auto;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 2px solid var(--border-light);
 }
 
 .reset-btn:hover {
-    background: #5a6268;
+  background: var(--bg-primary);
+  border-color: var(--border-medium);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
-/* Upload Progress */
 .upload-progress {
-    margin-top: 20px;
-    padding: 20px;
-    background: #f8f9fa;
-    border-radius: 8px;
-    border: 1px solid #e1e5e9;
+  margin-top: var(--spacing-xl);
+  padding: var(--spacing-lg);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-light);
 }
 
 .progress-bar {
-    width: 100%;
-    height: 8px;
-    background: #e1e5e9;
-    border-radius: 4px;
-    overflow: hidden;
-    margin-bottom: 10px;
+  width: 100%;
+  height: 8px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-bottom: var(--spacing-md);
 }
 
 .progress-fill {
-    height: 100%;
-    background: #667eea;
-    transition: width 0.3s ease;
-    width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  border-radius: var(--radius-full);
+  transition: width var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: progress-shine 2s infinite;
+}
+
+@keyframes progress-shine {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
 }
 
 .progress-text {
-    text-align: center;
-    color: #666;
-    font-size: 0.9rem;
+  text-align: center;
+  color: var(--text-secondary);
+  font-weight: 500;
 }
 
-/* Upload Result */
 .upload-result {
-    margin-top: 20px;
-    padding: 15px;
-    border-radius: 8px;
-    text-align: center;
+  margin-top: var(--spacing-xl);
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  text-align: center;
+  animation: slideInUp var(--transition-normal) ease;
 }
 
-.upload-result.success {
-    background: #d4edda;
-    border: 1px solid #c3e6cb;
-    color: #155724;
-}
-
-.upload-result.error {
-    background: #f8d7da;
-    border: 1px solid #f5c6cb;
-    color: #721c24;
+@keyframes slideInUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 .result-message {
-    font-weight: 500;
+  font-size: var(--font-size-base);
+  font-weight: 500;
 }
 
+.result-message div {
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  border: 1px solid;
+}
+
+.result-message div[style*="color: green"] {
+  background: rgba(39, 174, 96, 0.1);
+  border-color: rgba(39, 174, 96, 0.2);
+}
+
+.result-message div[style*="color: red"] {
+  background: rgba(231, 76, 60, 0.1);
+  border-color: rgba(231, 76, 60, 0.2);
+}
+
+/* File Input Styling */
+.input-group input[type="file"] {
+  padding: var(--spacing-md);
+  border: 2px dashed var(--border-medium);
+  background: var(--bg-primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.input-group input[type="file"]:hover {
+  border-color: var(--primary-color);
+  background: rgba(102, 126, 234, 0.05);
+}
+
+.input-group input[type="file"]:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
-    .upload-box {
-        padding: 30px 20px;
-        max-width: none;
-        margin: 10px;
-    }
-    
-    .form-actions {
-        flex-direction: column;
-    }
-    
-    .reset-btn {
-        flex: 1;
-    }
+  .upload-wrapper {
+    padding: var(--spacing-md);
+  }
+  
+  .upload-box {
+    padding: var(--spacing-xl);
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .upload-btn,
+  .reset-btn {
+    width: 100%;
+  }
 }
 
 @media (max-width: 480px) {
-    .upload-wrapper {
-        padding: 10px;
-    }
-    
-    .upload-box {
-        padding: 20px 15px;
-    }
-    
-    .form-section {
-        padding: 15px;
-    }
+  .upload-box .logo h1 {
+    font-size: var(--font-size-2xl);
+  }
+  
+  .form-section {
+    padding: var(--spacing-lg);
+  }
+  
+  .input-group input,
+  .input-group select {
+    padding: var(--spacing-md);
+  }
 }
